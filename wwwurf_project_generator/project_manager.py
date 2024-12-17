@@ -5,10 +5,13 @@ import subprocess
 import toml
 from typing import List, Optional, Dict, Any
 
+
 class ProjectManager:
     """Manages the creation and modification of multi-package Python projects."""
-    
-    def __init__(self, project_name: Optional[str] = None, packages: Optional[List[str]] = None):
+
+    def __init__(
+        self, project_name: Optional[str] = None, packages: Optional[List[str]] = None
+    ):
         """
         Initialize ProjectManager.
 
@@ -20,7 +23,9 @@ class ProjectManager:
         self.packages = packages if packages else ["core"]
         self.root_dir = Path(project_name) if project_name else Path.cwd()
 
-    def generate_file_content(self, file_type: str, package_name: Optional[str] = None) -> str:
+    def generate_file_content(
+        self, file_type: str, package_name: Optional[str] = None
+    ) -> str:
         """
         Generate content for various project files.
 
@@ -35,10 +40,14 @@ class ProjectManager:
             raise ValueError("package_name is required for package_pyproject")
 
         pkg_name = package_name if package_name else self.project_name
-        pkg_desc = f"{pkg_name.title()} - Standalone functionality" if package_name else "Main application that combines all packages"
+        pkg_desc = (
+            f"{pkg_name.title()} - Standalone functionality"
+            if package_name
+            else "Main application that combines all packages"
+        )
 
         contents: Dict[str, str] = {
-            "root_pyproject": f'''[tool.poetry]
+            "root_pyproject": f"""[tool.poetry]
 name = "{self.project_name}"
 version = "0.1.0"
 description = "Main application that combines all packages"
@@ -59,8 +68,8 @@ flake8 = "^6.1.0"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
-''',
-            "package_pyproject": f'''[tool.poetry]
+""",
+            "package_pyproject": f"""[tool.poetry]
 name = "{pkg_name}"
 version = "0.1.0"
 description = "{pkg_desc}"
@@ -77,7 +86,7 @@ python = "^3.9"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
-''',
+""",
             "main_app": '''"""Main application entry point that combines all packages."""
 
 def main():
@@ -114,7 +123,7 @@ if __name__ == "__main__":
             "package_init": '''"""Package initialization."""
 __version__ = "0.1.0"
 ''',
-            "root_readme": f'''# {self.project_name}
+            "root_readme": f"""# {self.project_name}
 
 Multi-package application using Poetry.
 
@@ -153,8 +162,8 @@ poetry run [package-name]
 ```bash
 ./manage.py add-package new_package_name
 ```
-''',
-            "package_readme": f'''# {pkg_name}
+""",
+            "package_readme": f"""# {pkg_name}
 
 A standalone package that can also be part of {self.project_name}.
 
@@ -169,8 +178,8 @@ poetry install
 ```bash
 poetry run {pkg_name}
 ```
-''',
-            "gitignore": '''__pycache__/
+""",
+            "gitignore": """__pycache__/
 *.py[cod]
 *$py.class
 *.so
@@ -198,19 +207,21 @@ htmlcov/
 .venv
 venv/
 ENV/
-''',
+""",
             "test": '''"""Basic test template."""
 def test_example():
     """Example test function."""
     assert True
-'''
+''',
         }
         return contents.get(file_type, "")
 
     def _generate_package_dependencies(self) -> str:
         """Generate package dependencies for root pyproject.toml."""
-        return "\n".join(f'{pkg} = {{path = "packages/{pkg}", develop = true}}' 
-                        for pkg in self.packages)
+        return "\n".join(
+            f'{pkg} = {{path = "packages/{pkg}", develop = true}}'
+            for pkg in self.packages
+        )
 
     def _generate_package_list(self) -> str:
         """Generate package list for README."""
@@ -239,21 +250,25 @@ def test_example():
 
             # Create package structure
             package_dir.mkdir(parents=True, exist_ok=True)
-            
+
             src_dir = package_dir / package_name
             src_dir.mkdir(parents=True, exist_ok=True)
-            (src_dir / "__init__.py").write_text(self.generate_file_content("package_init"))
+            (src_dir / "__init__.py").write_text(
+                self.generate_file_content("package_init")
+            )
             (src_dir / "main.py").write_text(self.generate_file_content("package_main"))
-            
+
             utils_dir = src_dir / "utils"
             utils_dir.mkdir(parents=True, exist_ok=True)
             (utils_dir / "__init__.py").touch()
-            
+
             tests_dir = package_dir / "tests"
             tests_dir.mkdir(parents=True, exist_ok=True)
             (tests_dir / "__init__.py").touch()
-            (tests_dir / f"test_{package_name}.py").write_text(self.generate_file_content("test"))
-            
+            (tests_dir / f"test_{package_name}.py").write_text(
+                self.generate_file_content("test")
+            )
+
             (package_dir / "pyproject.toml").write_text(
                 self.generate_file_content("package_pyproject", package_name)
             )
@@ -268,7 +283,7 @@ def test_example():
                     config = toml.load(root_pyproject)
                     config["tool"]["poetry"]["dependencies"][package_name] = {
                         "path": f"packages/{package_name}",
-                        "develop": True
+                        "develop": True,
                     }
                     root_pyproject.write_text(toml.dumps(config))
                     print(f"Added {package_name} to root pyproject.toml")
@@ -291,25 +306,35 @@ def test_example():
         try:
             # Create root directory
             self.root_dir.mkdir(exist_ok=True)
-            
+
             # Create main application structure
             main_app_dir = self.root_dir / "main_app"
             main_app_dir.mkdir(exist_ok=True)
-            (main_app_dir / "__init__.py").write_text(self.generate_file_content("package_init"))
-            (main_app_dir / "main.py").write_text(self.generate_file_content("main_app"))
-            
+            (main_app_dir / "__init__.py").write_text(
+                self.generate_file_content("package_init")
+            )
+            (main_app_dir / "main.py").write_text(
+                self.generate_file_content("main_app")
+            )
+
             # Create packages directory
             packages_dir = self.root_dir / "packages"
             packages_dir.mkdir(exist_ok=True)
-            
+
             # Create root configuration files
-            (self.root_dir / "pyproject.toml").write_text(self.generate_file_content("root_pyproject"))
-            (self.root_dir / "README.md").write_text(self.generate_file_content("root_readme"))
-            (self.root_dir / ".gitignore").write_text(self.generate_file_content("gitignore"))
-            
+            (self.root_dir / "pyproject.toml").write_text(
+                self.generate_file_content("root_pyproject")
+            )
+            (self.root_dir / "README.md").write_text(
+                self.generate_file_content("root_readme")
+            )
+            (self.root_dir / ".gitignore").write_text(
+                self.generate_file_content("gitignore")
+            )
+
             # Create management script
             self.create_management_script()
-            
+
             # Create each package
             for package in self.packages:
                 if not self.create_package(package):
@@ -322,7 +347,7 @@ def test_example():
 
     def create_management_script(self) -> None:
         """Create a management script for the project."""
-        script_content = '''#!/usr/bin/env python3
+        script_content = """#!/usr/bin/env python3
 import sys
 from pathlib import Path
 from wwwurf_project_generator.project_manager import ProjectManager
@@ -352,7 +377,7 @@ def main():
             print("4. poetry install")
     else:
         print(f"Unknown command: {command}")
-'''
+"""
         manage_script = self.root_dir / "manage.py"
         manage_script.write_text(script_content)
         manage_script.chmod(0o755)
