@@ -1,9 +1,10 @@
 """Module for managing multi-package Python project generation."""
 import os
-from pathlib import Path
 import subprocess
+from pathlib import Path
+from typing import Any, Dict, List, Optional
+
 import toml
-from typing import List, Optional, Dict, Any
 
 
 class ProjectManager:
@@ -347,6 +348,7 @@ def test_example():
 
     def create_management_script(self) -> None:
         """Create a management script for the project."""
+        
         script_content = """#!/usr/bin/env python3
 import sys
 from pathlib import Path

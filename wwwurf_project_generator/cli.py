@@ -2,6 +2,7 @@
 import argparse
 import sys
 from typing import Optional
+
 from wwwurf_project_generator.project_manager import ProjectManager
 
 
