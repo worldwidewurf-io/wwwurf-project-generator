@@ -348,7 +348,7 @@ def test_example():
 
     def create_management_script(self) -> None:
         """Create a management script for the project."""
-        
+
         script_content = """#!/usr/bin/env python3
 import sys
 from pathlib import Path
