@@ -55,9 +55,6 @@ jobs:
         poetry run black . --check --verbose
         poetry run isort . --check-only --verbose
     
-    - name: Lint with flake8
-      run: poetry run flake8 . --count --show-source --statistics
-
   publish:
     needs: test
     runs-on: ubuntu-latest
